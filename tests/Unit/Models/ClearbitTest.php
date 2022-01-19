@@ -2,7 +2,9 @@
 
 namespace Models;
 
+use App\Exceptions\AsyncLookingException;
 use App\Models\Clearbit;
+use Illuminate\Support\Str;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpFoundation\Exception\BadRequestException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
@@ -22,7 +24,17 @@ class ClearbitTest extends TestCase
         $this->expectException(BadRequestException::class);
 
         $clearbit = new Clearbit(env('CLEARBIT_API_KEY'));
-        $clearbit->getCompany('dgsdfgsdgfdsfg.com');
+        $clearbit->getCompany('');
+    }
+
+    public function testGetCompanyExpectAsyncException()
+    {
+        $this->expectException(AsyncLookingException::class);
+
+        $domainName = Str::random(10) . '.com';
+
+        $clearbit = new Clearbit(env('CLEARBIT_API_KEY'));
+        $clearbit->getCompany($domainName);
     }
 
     /**
